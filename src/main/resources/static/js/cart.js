@@ -1,0 +1,96 @@
+document.addEventListener("DOMContentLoaded", loadCart);
+
+function loadCart() {
+
+    fetch("/api/cart")
+        .then(res => res.json())
+        .then(items => {
+
+            const table = document.getElementById("cart-table-body");
+            const totalDisplay = document.getElementById("cart-total");
+
+            table.innerHTML = "";
+
+            let cartTotal = 0;
+
+            items.forEach(item => {
+
+                const itemTotalPrice = item.price * item.quantity;
+                cartTotal += itemTotalPrice;
+
+                const row = document.createElement("tr");
+
+                row.innerHTML = `
+                    <td>${item.title}</td>
+                    <td>$${item.price}</td>
+
+                    <td>
+                        <input type="number" min="1" value="${item.quantity}"
+                               class="form-control quantity-input"
+                               data-bookid="${item.bookId}">
+                    </td>
+
+                    <td>$${itemTotalPrice.toFixed(2)}</td>
+
+                    <td>
+                        <button class="btn btn-danger remove-btn"
+                                data-bookid="${item.bookId}">
+                                Remove
+                        </button>
+                    </td>
+                `;
+
+                table.appendChild(row);
+            });
+
+            totalDisplay.innerText = "Cart Total: $" + cartTotal.toFixed(2);
+
+            setupQuantityUpdate();
+            setupRemoveButtons();
+        });
+}
+
+function setupQuantityUpdate() {
+
+    document.querySelectorAll(".quantity-input").forEach(input => {
+
+        input.addEventListener("change", () => {
+
+            const bookId = input.dataset.bookid;
+            const quantity = parseInt(input.value);
+
+            fetch("/api/cart/update", {
+
+                method: "PUT",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+                    bookId: bookId,
+                    quantity: quantity
+                })
+
+            }).then(() => loadCart());
+
+        });
+
+    });
+}
+
+
+function setupRemoveButtons() {
+    document.querySelectorAll(".remove-btn").forEach(button => {
+
+        button.addEventListener("click", () => {
+
+            const bookId = button.dataset.bookid;
+
+            fetch(`/api/cart/remove/${bookId}`, {
+                method: "DELETE",
+            })
+            .then(() => loadCart());
+        });
+    });
+}

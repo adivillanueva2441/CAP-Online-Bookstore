@@ -1,7 +1,6 @@
 package com.example.online_bookstore.model;
 
 import jakarta.persistence.*;
-import org.hibernate.mapping.Join;
 
 import java.util.List;
 

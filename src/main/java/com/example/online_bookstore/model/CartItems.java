@@ -18,11 +18,6 @@ public class CartItems{
     @Column(nullable = false, name = "quantity")
     private int quantity;
 
-    @Min(value = 1, message = "Total should be a positive number.")
-    @Column(nullable = false, name = "total_price")
-    private double totalPrice;
-
-
     @ManyToOne
     @JoinColumn(name = "cart_id", nullable = false)
     private Cart cart;
@@ -64,11 +59,4 @@ public class CartItems{
         this.cartItemsId = cartItemsId;
     }
 
-    public double getTotalPrice() {
-        return totalPrice;
-    }
-
-    public void setTotalPrice(double totalPrice) {
-        this.totalPrice = totalPrice;
-    }
 }

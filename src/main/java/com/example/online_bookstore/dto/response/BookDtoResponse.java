@@ -1,14 +1,16 @@
-package com.example.online_bookstore.dto;
+package com.example.online_bookstore.dto.response;
 import com.example.online_bookstore.model.Book;
 
-public class BookDto {
+public class BookDtoResponse {
+    private Long bookId;
     private String title;
     private String authorName;
     private String categoryName;
     private String description;
     private double price;
 
-    public BookDto(Book book) {
+    public BookDtoResponse(Book book) {
+        this.bookId = book.getBookId();
         this.title = book.getTitle();
         this.authorName = book.getAuthor() != null ? book.getAuthor().getAuthorName() : "Unknown";
         this.categoryName = book.getCategory() != null ? book.getCategory().getCategoryName() : "Unknown";
@@ -54,5 +56,13 @@ public class BookDto {
 
     public double getPrice() {
         return price;
+    }
+
+    public Long getBookId() {
+        return bookId;
+    }
+
+    public void setBookId(Long bookId) {
+        this.bookId = bookId;
     }
 }

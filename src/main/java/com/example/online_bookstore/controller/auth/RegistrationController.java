@@ -1,7 +1,9 @@
 package com.example.online_bookstore.controller.auth;
 
 import com.example.online_bookstore.model.User;
-import com.example.online_bookstore.service.UserRegistrationService;
+import com.example.online_bookstore.service.IUserRegistrationService;
+import com.example.online_bookstore.service.impl.UserRegistrationServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,11 +14,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 @Controller
 public class RegistrationController {
 
-    private final UserRegistrationService userRegistrationService;
-
-    public RegistrationController(UserRegistrationService userRegistrationService) {
-        this.userRegistrationService = userRegistrationService;
-    }
+    @Autowired
+    private IUserRegistrationService userRegistrationService;
 
     // Render registration page
     @GetMapping("/register")

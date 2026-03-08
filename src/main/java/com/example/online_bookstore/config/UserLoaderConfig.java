@@ -1,4 +1,4 @@
-package com.example.online_bookstore.service;
+package com.example.online_bookstore.config;
 
 import com.example.online_bookstore.model.User;
 import com.example.online_bookstore.repository.UserRepository;
@@ -10,7 +10,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
-public class UserLoaderService implements UserDetailsService {
+public class UserLoaderConfig implements UserDetailsService{
 
     @Autowired
     private UserRepository userRepository;

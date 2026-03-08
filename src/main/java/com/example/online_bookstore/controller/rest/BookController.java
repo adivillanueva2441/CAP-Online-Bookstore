@@ -1,30 +1,38 @@
 package com.example.online_bookstore.controller.rest;
 
-import com.example.online_bookstore.dto.BookDto;
-import com.example.online_bookstore.service.BookService;
+import com.example.online_bookstore.dto.response.BookDtoResponse;
+import com.example.online_bookstore.service.IBookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/books")
+@RequestMapping("/api/books")
 public class BookController {
     @Autowired
-    private BookService bookService;
+    private IBookService bookService;
 
     //Retrieve book list
     @GetMapping
-    public List<BookDto> getBooks() {
+    public List<BookDtoResponse> getBooks() {
         return bookService.getAllBooks();
     }
 
     //Search books by title
     @GetMapping("/search")
-    public List<BookDto> searchBooks(@RequestParam("title") String title){
+    public List<BookDtoResponse> searchBooks(@RequestParam("title") String title){
         return bookService.findBooksByTitle(title);
     }
+
+
+    // View book details individually
+    @GetMapping("/{bookId}")
+    public BookDtoResponse getBook(@PathVariable Long bookId) {
+        return bookService.getBookById(bookId);
+    }
+
+
 
 
 
