@@ -1,24 +1,23 @@
 package com.example.online_bookstore.dto.response;
 
+import com.example.online_bookstore.model.CartItems;
 import jakarta.validation.constraints.NotEmpty;
 
 public class CartItemsDtoResponse {
 
-
-    @NotEmpty(message = "cartItemId cannot be empty.")
     private Long cartItemId;
-
-    @NotEmpty(message = "bookId cannot be empty.")
     private Long bookId;
-
-    @NotEmpty(message = "title cannot be empty.")
     private String title;
-
-    @NotEmpty(message = "quantity cannot be empty.")
     private int quantity;
-
-    @NotEmpty(message = "price cannot be empty")
     private double price;
+
+    public CartItemsDtoResponse(CartItems cartItems) {
+        this.cartItemId = cartItems.getCartItemsId();
+        this.bookId = cartItems.getBook().getBookId();
+        this.title = cartItems.getBook().getTitle();
+        this.quantity = cartItems.getQuantity();
+        this.price = cartItems.getBook().getPrice();
+    }
 
     public Long getCartItemId() {
         return cartItemId;

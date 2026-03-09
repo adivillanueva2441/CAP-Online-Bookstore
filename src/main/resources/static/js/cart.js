@@ -4,7 +4,7 @@ function loadCart() {
 
     fetch("/api/cart")
         .then(res => res.json())
-        .then(items => {
+        .then(books => {
 
             const table = document.getElementById("cart-table-body");
             const totalDisplay = document.getElementById("cart-total");
@@ -13,29 +13,29 @@ function loadCart() {
 
             let cartTotal = 0;
 
-            items.forEach(item => {
+            books.forEach(book => {
 
-                const itemTotalPrice = item.price * item.quantity;
-                cartTotal += itemTotalPrice;
+                const bookTotalPrice = book.price * book.quantity;
+                cartTotal += bookTotalPrice;
 
                 const row = document.createElement("tr");
 
                 row.innerHTML = `
-                    <td>${item.title}</td>
-                    <td>$${item.price}</td>
+                    <td class="title-col">${book.title}</td>
+                    <td>$${book.price}</td>
 
                     <td>
-                        <input type="number" min="1" value="${item.quantity}"
+                        <input type="number" min="1" value="${book.quantity}"
                                class="form-control quantity-input"
-                               data-bookid="${item.bookId}">
+                               data-bookid="${book.bookId}" onInput="this.value = Math.abs(this.value)">
                     </td>
 
-                    <td>$${itemTotalPrice.toFixed(2)}</td>
+                    <td>$${bookTotalPrice.toFixed(2)}</td>
 
                     <td>
                         <button class="btn btn-danger remove-btn"
-                                data-bookid="${item.bookId}">
-                                Remove
+                                data-bookid="${book.bookId}">
+                                Remove from cart
                         </button>
                     </td>
                 `;

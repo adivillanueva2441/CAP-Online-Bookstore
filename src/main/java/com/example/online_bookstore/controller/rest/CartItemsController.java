@@ -26,7 +26,7 @@ public class CartItemsController {
 
     @GetMapping
     public List<CartItemsDtoResponse> getCartItems(Authentication authentication) {
-        User user = getAuthenticatedUser(authentication);
+        User user = userService.findByUsername(authentication.getName());
         return  cartItemsService.getCartItems(user.getUserId());
     }
 
@@ -34,41 +34,26 @@ public class CartItemsController {
     public CartItemsDtoResponse addBookToCart(@RequestBody CartItemsDtoRequest cartItemsDtoRequest,
                                                   Authentication authentication) {
         //Authenticate a user is logged in before adding to cart
-        String username = authentication.getName();
-        User user = getAuthenticatedUser(authentication);
+        User user = userService.findByUsername(authentication.getName());
 
-        return getCartItemsDtoResponse(cartItemsDtoRequest, user);
+        CartItems cartItems = cartItemsService.addBookToCart(user.getUserId(), cartItemsDtoRequest);
+
+        return new CartItemsDtoResponse(cartItems);
 
     }
 
     @PutMapping("/update")
     public void updateCartItems(@RequestBody CartItemsDtoRequest cartItemsDtoRequest,
                                                 Authentication authentication) {
-        User user = getAuthenticatedUser(authentication);
+        User user = userService.findByUsername(authentication.getName());
         cartItemsService.updateCartItems(user.getUserId(), cartItemsDtoRequest);
 
     }
 
     @DeleteMapping("/remove/{bookId}")
-    public void  deleteCartItems(@PathVariable Long bookId, Authentication authentication) {
-        User user = getAuthenticatedUser(authentication);
+    public void deleteCartItems(@PathVariable Long bookId, Authentication authentication) {
+        User user = userService.findByUsername(authentication.getName());
         cartItemsService.removeBookFromCart(user.getUserId(), bookId);
     }
 
-    @NonNull
-    private CartItemsDtoResponse getCartItemsDtoResponse(CartItemsDtoRequest cartItemsDtoRequest, User user) {
-        CartItems addedBookToCart = cartItemsService.addBookToCart(user.getUserId(), cartItemsDtoRequest);
-
-        CartItemsDtoResponse cartItemsDtoResponse = new CartItemsDtoResponse();
-        cartItemsDtoResponse.setCartItemId(addedBookToCart.getCartItemsId());
-        cartItemsDtoResponse.setBookId(addedBookToCart.getBook().getBookId());
-        cartItemsDtoResponse.setQuantity(addedBookToCart.getQuantity());
-
-        return cartItemsDtoResponse;
-
-    }
-
-    private User getAuthenticatedUser(Authentication authentication) {
-        return userService.findByUsername(authentication.getName());
-    }
 }

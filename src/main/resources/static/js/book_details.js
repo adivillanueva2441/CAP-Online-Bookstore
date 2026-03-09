@@ -11,13 +11,13 @@ document.addEventListener("DOMContentLoaded", () => {
             container.innerHTML = `
                 <div class="col-md-6">
                     <div class="card shadow p-4">
-                        <h3>${book.title}</h3>
+                        <h3 class="title-col">${book.title}</h3>
                         <p><strong>Category:</strong> ${book.categoryName}</p>
                         <p><strong>Author:</strong> ${book.authorName}</p>
                         <p>${book.description}</p>
                         <p><strong>Price:</strong> $${book.price.toFixed(2)}</p>
                         <div class="input-group mt-3">
-                            <input type="number" min="1" value="1" class="form-control" id="quantityInput">
+                            <input type="number" min="1" value="1" class="form-control" id="quantityInput" onInput="this.value = Math.abs(this.value)">
                             <button class="btn btn-success" id="addToCartBtn">Add to Cart</button>
                         </div>
                         <div id="cartMessage" class="mt-2"></div>

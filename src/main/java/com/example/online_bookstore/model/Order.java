@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -25,7 +26,7 @@ public class Order {
 
 
     @OneToMany(mappedBy = "order")
-    private List<OrderItems> orderItems;
+    private List<OrderItems> orderItems = new ArrayList<>();
 
     @ManyToOne()
     @JoinColumn(name = "user_id")

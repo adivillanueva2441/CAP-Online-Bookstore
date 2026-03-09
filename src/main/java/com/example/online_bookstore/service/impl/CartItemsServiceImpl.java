@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CartItemsServiceImpl implements ICartItemsService {
@@ -74,8 +75,11 @@ public class CartItemsServiceImpl implements ICartItemsService {
         Cart cart = cartRepository.findByUser_UserId(userId);
         CartItems cartItem = cartItemsRepository.findByCartAndBook_BookId(cart, bookId);
 
-        if (cartItem != null) {
-            cartItemsRepository.delete(cartItem);
+//        if (cartItem != null) {
+//            cartItemsRepository.delete(cartItem);
+//        }
+        if (null != cartItem.getCartItemsId()) {
+            cartItemsRepository.deleteById(cartItem.getCartItemsId());
         }
     }
 
@@ -83,26 +87,17 @@ public class CartItemsServiceImpl implements ICartItemsService {
     private List<CartItemsDtoResponse> getCartItemsDtoResponse(Cart cart) {
         return cartItemsRepository.findByCart(cart)
                 .stream()
-                .map(cartItems -> {
+                .map(CartItemsDtoResponse::new)
+                .collect(Collectors.toList());
 
-                    CartItemsDtoResponse cartItemsDtoResponse = new CartItemsDtoResponse();
-
-                    cartItemsDtoResponse.setBookId(cartItems.getBook().getBookId());
-                    cartItemsDtoResponse.setTitle(cartItems.getBook().getTitle());
-                    cartItemsDtoResponse.setPrice(cartItems.getBook().getPrice());
-                    cartItemsDtoResponse.setQuantity(cartItems.getQuantity());
-
-                    return cartItemsDtoResponse;
-
-                }).toList();
     }
 
     @NonNull
     private CartItems createCartItems(CartItemsDtoRequest cartItemsDtoRequest, Cart cart, Book book) {
-        CartItems newItem = new CartItems();
-        newItem.setCart(cart);
-        newItem.setBook(book);
-        newItem.setQuantity(cartItemsDtoRequest.getQuantity());
-        return newItem;
+        CartItems cartItem = new CartItems();
+        cartItem.setCart(cart);
+        cartItem.setBook(book);
+        cartItem.setQuantity(cartItemsDtoRequest.getQuantity());
+        return cartItem;
     }
 }

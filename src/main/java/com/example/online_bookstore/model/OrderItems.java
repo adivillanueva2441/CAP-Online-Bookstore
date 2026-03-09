@@ -20,7 +20,7 @@ public class OrderItems {
 
     @Column(nullable = false, name = "total_price")
     @Min(value = 1, message = "Total price should be a positive number.")
-    private int totalPrice;
+    private double price;
 
     @ManyToOne
     @JoinColumn(name = "order_id")
@@ -63,11 +63,11 @@ public class OrderItems {
         this.orderItemsId = orderItemsId;
     }
 
-    public int getTotalPrice() {
-        return totalPrice;
+    public double getPrice() {
+        return price;
     }
 
-    public void setTotalPrice(int totalPrice) {
-        this.totalPrice = totalPrice;
+    public void setPrice(double price) {
+        this.price = price;
     }
 }

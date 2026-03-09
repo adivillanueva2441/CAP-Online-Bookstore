@@ -14,7 +14,7 @@ public class Book {
     // Sets Primary/Foreign Keys and relationship with other tables
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long bookId;
+    private Long bookId;
 
     @NotBlank(message = "Book title is required.")
     @Column(nullable = false, unique = true, length = 150, name = "title")
@@ -40,11 +40,11 @@ public class Book {
     private List<OrderItems> orderItems;
 
 
-    public long getBookId() {
+    public Long getBookId() {
         return bookId;
     }
 
-    public void setBookId(long bookId) {
+    public void setBookId(Long bookId) {
         this.bookId = bookId;
     }
 

@@ -11,24 +11,25 @@
 <div th:replace="~{navbar/webpage_navbar :: navbar}"></div>
 
 <div class="container mt-4">
-    <table class="table">
+    <h2>Checkout Details</h2>
+    <table class="table table-striped">
         <thead>
         <tr>
             <th>Book</th>
             <th>Price</th>
             <th>Quantity</th>
-            <th>Subtotal</th>
+            <th>Total</th>
         </tr>
         </thead>
 
         <tbody id="checkout-items"></tbody>
-    </table>
 
+    </table>
     <h4>Total: $<span id="checkout-total"></span></h4>
 
     <a class="btn btn-secondary" th:href="@{/cart}">Cancel</a>
 
-    <a class="btn btn-primary" th:href="@{/checkout}">Confirm Order</a>
+    <a class="btn btn-primary" id="checkout-btn">Confirm Order</a>
 </div>
 
 <script src="/js/checkout.js"></script>
