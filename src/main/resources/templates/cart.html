@@ -12,25 +12,34 @@
 
 <div class="container mt-4">
 
-    <h2>Your Cart</h2>
+    <h5 class="mb-4">Shopping Cart</h5>
 
-    <table class="table table-striped">
-        <thead>
-        <tr>
-            <th>Book</th>
-            <th>Price</th>
-            <th>Quantity</th>
-            <th>Total</th>
-            <th>Action</th>
-        </tr>
-        </thead>
+    <div class="card-body p-0">
+        <div class="table-responsive">
 
-        <tbody id="cart-table-body"></tbody>
+            <table class="table table-hover align-middle mb-0">
 
-    </table>
+                <thead class="table-dark text-center">
+                <tr>
+                    <th>Book</th>
+                    <th>Price</th>
+                    <th style="width:140px;">Quantity</th>
+                    <th>Subtotal</th>
+                    <th style="width:120px;">Action</th>
+                </tr>
+                </thead>
 
-    <h4 id="cart-total"></h4>
-    <a class="btn btn-secondary" th:href="@{/}">Back to Home</a>
+                <tbody id="cart-table-body" class="text-center">
+                <!-- JS populates rows -->
+                </tbody>
+
+            </table>
+
+        </div>
+    </div>
+
+    <h4 id="cart-total" class="mt-4 mb-4"></h4>
+    <a class="btn btn-primary" th:href="@{/}">Back to Home</a>
     <a class="btn btn-success" th:href="@{/cart/checkout}">
         Proceed To Checkout</a>
 

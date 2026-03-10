@@ -10,20 +10,38 @@ document.addEventListener("DOMContentLoaded", () => {
         .then(book => {
             container.innerHTML = `
                 <div class="col-md-6">
-                    <div class="card shadow p-4">
-                        <h3 class="title-col">${book.title}</h3>
-                        <p><strong>Category:</strong> ${book.categoryName}</p>
-                        <p><strong>Author:</strong> ${book.authorName}</p>
-                        <p>${book.description}</p>
-                        <p><strong>Price:</strong> $${book.price.toFixed(2)}</p>
-                        <div class="input-group mt-3">
-                            <input type="number" min="1" value="1" class="form-control" id="quantityInput" onInput="this.value = Math.abs(this.value)">
-                            <button class="btn btn-success" id="addToCartBtn">Add to Cart</button>
+                    <div class="card shadow-sm h-100 d-flex flex-column p-3">
+                        <img src="${book.coverImageUrl || 'https://img.freepik.com/free-vector/blue-text-book-library-icon_24877-83092.jpg?semt=ais_rp_50_assets&w=740&q=80'}"
+                             class="card-img-top mb-3" style="height:200px; object-fill;">
+
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title text-primary fw-bold text-truncate" title="${book.title}"
+                                style="font-size:1.25rem;">${book.title}</h5>
+
+                            <p class="card-text text-muted mb-1"><small>Category: ${book.categoryName}</small></p>
+                            <p class="card-text text-muted mb-2"><small>Author: ${book.authorName}</small></p>
+
+                            <p class="card-text text-truncate-3" style="flex-grow:1;">${book.description}</p>
+
+                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                <span class="fw-bold text-primary fs-5">$${book.price.toFixed(2)}</span>
+                                <div class="input-group" style="width: 300px;">
+                                    <button class="btn btn-primary btn-sm back-btn">Back to Home</button>
+                                    <input type="number" min="1" value="1" class="form-control" id="quantityInput"
+                                           onInput="this.value = Math.abs(this.value)">
+                                    <button class="btn btn-success" id="addToCartBtn">Add</button>
+                                </div>
+                            </div>
+
+                            <div id="cartMessage" class="mt-2"></div>
                         </div>
-                        <div id="cartMessage" class="mt-2"></div>
                     </div>
                 </div>
             `;
+
+            container.querySelector(".back-btn").addEventListener("click", () => {
+                window.location.href = `/`;
+            });
 
             //Event listener for when 'add to cart' button is pressed
             document.getElementById("addToCartBtn").addEventListener("click", () => {
@@ -47,7 +65,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     body: JSON.stringify(payload)
                 })
                 .then(res => {
-                    if (!res.ok) throw new Error("Failed to add to cart");
+                    if (!res.ok) throw new Error("Unauthorized Action: User not logged in");
                     return res.json();
                 })
                 .then(data => {

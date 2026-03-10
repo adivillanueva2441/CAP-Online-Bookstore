@@ -25,6 +25,11 @@ public class BookController {
         return bookService.findBooksByTitle(title);
     }
 
+    @GetMapping("/category/{categoryId}")
+    public List<BookDtoResponse> getBooksByCategory(@PathVariable Long categoryId) {
+        return bookService.filterByCategory(categoryId);
+    }
+
 
     // View book details individually
     @GetMapping("/{bookId}")

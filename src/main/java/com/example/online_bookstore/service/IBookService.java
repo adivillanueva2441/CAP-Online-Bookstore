@@ -8,4 +8,5 @@ public interface IBookService {
     List<BookDtoResponse> getAllBooks();
     List<BookDtoResponse> findBooksByTitle(String title);
     BookDtoResponse getBookById(Long bookId);
+    List<BookDtoResponse> filterByCategory(Long categoryId);
 }

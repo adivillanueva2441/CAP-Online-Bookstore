@@ -4,8 +4,11 @@ import com.example.online_bookstore.model.User;
 import com.example.online_bookstore.service.IUserRegistrationService;
 import com.example.online_bookstore.service.impl.UserRegistrationServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,9 +29,21 @@ public class RegistrationController {
 
     //Handle registration form submission
     @PostMapping("/register")
-    public String registerUser(@ModelAttribute("user") User user) {
+    public String registerUser(@ModelAttribute("user") User user,
+                               BindingResult bindingResult,
+                               Model model) {
+
+        if (userRegistrationService.usernameExists(user.getUsername())) {
+            bindingResult.rejectValue("username", "error.user", "Username already exists");
+        }
+        if (bindingResult.hasErrors()) {
+            return "auth/register"; // show registration error
+        }
+
         userRegistrationService.registerUser(user);
-        return "redirect:auth/login";
+        model.addAttribute("successMessage", "Registration successful!");
+        model.addAttribute("user", new User()); // reset form
+        return "auth/register";
     }
 
 }

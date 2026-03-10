@@ -14,9 +14,9 @@ function loadOrders() {
 
             orders.forEach(order => {
                 const orderHtml = `
-                    <div class="card mb-3">
-                        <div class="card-header">
-                            Order Date: ${new Date(order.orderDate).toLocaleString()} | Total: $${order.totalPrice.toFixed(2)}
+                    <div class="card mb-3 mt-4">
+                        <div class="card-header card text-white bg-success fw-bold">
+                            Order Date: ${new Date(order.orderDate).toLocaleString()} | Total Cost: $${order.totalPrice.toFixed(2)}
                         </div>
                         <div class="card-body p-0">
                             <table class="table mb-0">
@@ -31,10 +31,10 @@ function loadOrders() {
                                 <tbody>
                                     ${order.orderItems.map(item => `
                                         <tr>
-                                            <td class="title-col">${item.title}</td>
-                                            <td>$${item.price.toFixed(2)}</td>
-                                            <td>${item.quantity}</td>
-                                            <td>$${item.subTotal.toFixed(2)}</td>
+                                            <td class="text-truncate w-50" style="max-width: 50%;" title="${item.title}">${item.title}</td>
+                                            <td class="w-15 text center">$${item.price.toFixed(2)}</td>
+                                            <td class="w-15 text center">${item.quantity}</td>
+                                            <td class="w-20 text center">$${item.subTotal.toFixed(2)}</td>
                                         </tr>
                                     `).join('')}
                                 </tbody>

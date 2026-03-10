@@ -20,9 +20,10 @@ public class BookServiceImpl implements IBookService {
     @Override
     //Retrieve book list
     public List<BookDtoResponse> getAllBooks(){
-        List<Book> books = bookRepository.findAll();
 
-        return books.stream()
+        List<Book> listOfBooks = bookRepository.findAll();
+
+        return listOfBooks.stream()
                 .map(BookDtoResponse::new)
                 .collect(Collectors.toList());
     }
@@ -37,12 +38,21 @@ public class BookServiceImpl implements IBookService {
                 .collect(Collectors.toList());
 
     }
+
+    @Override
+    public List<BookDtoResponse> filterByCategory(Long categoryId) {
+        return bookRepository.findByCategory_CategoryId(categoryId)
+                .stream()
+                .map(BookDtoResponse::new)
+                .toList();
+    }
+
     @Override
     public BookDtoResponse getBookById(Long bookId) {
-        Book book = bookRepository.findById(bookId)
+        Book listOfBooks = bookRepository.findById(bookId)
                 .orElseThrow(() -> new RuntimeException("Book not found"));
 
-        return getBookDto(book);
+        return getBookDto(listOfBooks);
     }
 
     @NonNull
