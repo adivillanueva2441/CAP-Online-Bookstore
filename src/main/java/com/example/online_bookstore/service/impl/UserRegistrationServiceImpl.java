@@ -21,8 +21,7 @@ public class UserRegistrationServiceImpl implements IUserRegistrationService {
 
     @Override
     public void registerUser(User user) {
-        String username = userRepository.findByUsername(user.getUsername()).toString();
-        if(username.isEmpty()){
+        if (userRepository.findByUsername(user.getUsername()).isPresent()) {
             throw new RuntimeException("Username is already in use");
         }
         //mask password

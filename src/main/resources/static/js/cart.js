@@ -47,6 +47,13 @@ function loadCart() {
 
             setupQuantityUpdate();
             setupRemoveButtons();
+
+            checkoutBtn.addEventListener("click", (e) => {
+                if (books.length === 0) {
+                    e.preventDefault(); // stop redirect if cart is empty
+                    alert("Your cart is empty. Please add items before checking out.");
+                }
+            });
         });
 }
 

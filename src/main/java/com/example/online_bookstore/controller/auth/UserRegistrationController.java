@@ -2,10 +2,7 @@ package com.example.online_bookstore.controller.auth;
 
 import com.example.online_bookstore.model.User;
 import com.example.online_bookstore.service.IUserRegistrationService;
-import com.example.online_bookstore.service.impl.UserRegistrationServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -15,7 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 //Renders and handles user registration page
 @Controller
-public class RegistrationController {
+public class UserRegistrationController {
 
     @Autowired
     private IUserRegistrationService userRegistrationService;

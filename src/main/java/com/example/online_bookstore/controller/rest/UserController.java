@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/user")
 public class UserController {
-
     @Autowired
     private UserServiceImpl userServiceImpl;
 
@@ -20,4 +19,5 @@ public class UserController {
         String username = authentication.getName();
         return userServiceImpl.findByUsername(username);
     }
+    // TODO: USER PROFILE ( NOT IMPLEMENTED)
 }

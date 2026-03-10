@@ -18,6 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -34,15 +35,8 @@ public class BookServiceTest {
 
 
     @Test
-    @DisplayName("getAllBooks_Success_Scenario")
     public void getAllBooks_Success_Test(){
-        /*
-            TODO STEP 1
-            Initate and set test values == dito sineset ung mga dummy data
-             and objects nagagamitin sa test
 
-             e.g requestDtos, resonses, fields na kailangan
-         */
         Book book = new Book();
 
         List<Book> bookList = new ArrayList<>();
@@ -64,10 +58,8 @@ public class BookServiceTest {
         book.setOrderItems(new ArrayList<>());
         book.setCategory(category);
 
-        // YUNG MGA NASA TAAS NITONG COMMENT, ITO UNG MGA NEED NA DATA SA METHOD NA TINETEST
         List<BookDtoResponse> bookDtoResponseList = new ArrayList<>();
 
-        // Expected Result -- ITO UNG RESPONSE NA GUSTO NATIN MA-CHECK KUNG TAMA BA YUNG BINATO NG METHOD MO
         BookDtoResponse bookDtoResponse = new BookDtoResponse(book);
         bookDtoResponse.setBookId(1L);
         bookDtoResponse.setTitle("Book 1");
@@ -78,37 +70,12 @@ public class BookServiceTest {
 
         bookDtoResponseList.add(bookDtoResponse);
 
-        /*
-            TODO STEP 2
-            This where you Mock services, repositories and other configs
-            e.g BookService, Book Repository etc
-         */
 
-        //Only use "when()" if may ineexpect na return
         when(bookRepository.findAll()).thenReturn(bookList);
-
-        //kapag  "return type" is void ang gagamitin ito doNothing().when(bookRepository).saveAll(bookList);
-//        doNothing().when(bookRepository).saveAll(bookList);
-
-        //TODO Step 3
-        // Call yung actual book service /service para ma-run yung
-        // code (tapos papasa rin dito ung mga values na sinet sa step 1 kung kailangan)
 
         List<BookDtoResponse> response = bookService.getAllBooks(); // dito na papasok yung test sa actual Impl
 
-        /*
-            TODO STEP 4 (OPTIONAL)
-            Verification == ensures na yung mga repositories, services
-            or configs na minock mo ay natawag talaga or hindi natawag
-         */
-        verify(bookRepository, times(1)).findAll(); // scenario na natatawag ung mock
-//        verify(bookRepository, never()).findAll(); // ito ay kapag hindi natawag ung mockedd service or repo or method
-
-        /*
-            TODO STEP 5 (Assertion)
-             Dito kino-compare yung values na minock
-             or nireturn sa Step 2 vs sa nireturn ni step 3
-         */
+        verify(bookRepository, times(1)).findAll();
 
         assertThat(response)
                 .usingRecursiveComparison()
@@ -116,10 +83,6 @@ public class BookServiceTest {
 
     }
 
-    /**
-     * tests the failed scenario -- null return/no data found
-     */
-    @DisplayName("getAllBooks_Empty_Return_Scenario")
     @Test
     public void getAllBooks_Empty_Test(){
         // Arrange
@@ -134,7 +97,6 @@ public class BookServiceTest {
     }
 
     @Test
-    @DisplayName("findBooksByTitle_Success_Scenario")
     void findBooksByTitle_Success_Test() {
 
         // Arrange
@@ -153,9 +115,9 @@ public class BookServiceTest {
 
     }
 
+    //Tests if no title returns an empty list of no matching titles were searched
     @Test
-    @DisplayName("findBooksByTitle_Success_Scenario")
-    void findBooksByTitle_shouldReturnEmptyList_whenNoMatches() {
+    void findBooksByTitle_Empty_Test() {
 
         // Arrange
         when(bookRepository.findBooksByTitleContainingIgnoreCase("Nonexistent"))
@@ -171,5 +133,104 @@ public class BookServiceTest {
         verify(bookRepository, times(1))
                 .findBooksByTitleContainingIgnoreCase("Nonexistent");
     }
+
+    @Test
+    void filterByCategory_Success_Test() {
+
+        // Arrange
+        Category category = new Category();
+        category.setCategoryId(1L);
+        category.setName("Programming");
+
+        Book book = new Book();
+        book.setBookId(1L);
+        book.setTitle("Clean Code");
+        book.setCategory(category);
+
+        when(bookRepository.findByCategory_CategoryId(1L))
+                .thenReturn(List.of(book));
+
+        // Act
+        List<BookDtoResponse> result = bookService.filterByCategory(1L);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals("Clean Code", result.get(0).getTitle());
+        assertEquals("Programming", result.get(0).getCategoryName());
+
+        verify(bookRepository, times(1))
+                .findByCategory_CategoryId(1L);
+    }
+
+    @Test
+    void filterByCategory_Empty_Test() {
+
+        // Arrange
+        when(bookRepository.findByCategory_CategoryId(1L))
+                .thenReturn(Collections.emptyList());
+
+        // Act
+        List<BookDtoResponse> result = bookService.filterByCategory(1L);
+
+        // Assert
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+
+        verify(bookRepository, times(1))
+                .findByCategory_CategoryId(1L);
+    }
+
+    @Test
+    void getBookById_returnBook_ifBookExists() {
+
+        // Arrange
+        Author author = new Author();
+        author.setName("Robert Martin");
+
+        Category category = new Category();
+        category.setName("Programming");
+
+        Book book = new Book();
+        book.setBookId(1L);
+        book.setTitle("Clean Code");
+        book.setAuthor(author);
+        book.setCategory(category);
+        book.setDescription("A book about writing cleaner code");
+        book.setPrice(45.0);
+
+        when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
+
+        // Act
+        BookDtoResponse result = bookService.getBookById(1L);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(1L, result.getBookId());
+        assertEquals("Clean Code", result.getTitle());
+        assertEquals("Robert Martin", result.getAuthorName());
+        assertEquals("Programming", result.getCategoryName());
+
+        verify(bookRepository, times(1)).findById(1L);
+
+    }
+
+    @Test
+    void getBookById_shouldThrowException_whenBookDoesNotExist() {
+
+        // Arrange
+        when(bookRepository.findById(1L)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        RuntimeException exception = assertThrows(
+                RuntimeException.class,
+                () -> bookService.getBookById(1L)
+        );
+
+        assertEquals("Book not found", exception.getMessage());
+
+        verify(bookRepository, times(1)).findById(1L);
+    }
+
 
 }
