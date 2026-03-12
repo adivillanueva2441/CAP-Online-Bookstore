@@ -38,7 +38,7 @@ class BookServiceTest {
         author.setName("Robert C. Martin");  // uses setName()
 
         Category category = new Category();
-        category.setName("Programming");     // uses setName()
+        category.setCategoryName("Programming");     // uses setName()
 
         sampleBook = new Book();
         sampleBook.setBookId(1L);

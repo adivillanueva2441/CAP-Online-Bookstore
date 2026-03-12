@@ -9,6 +9,7 @@ import com.example.online_bookstore.model.Category;
 import com.example.online_bookstore.repository.AuthorRepository;
 import com.example.online_bookstore.repository.BookRepository;
 import com.example.online_bookstore.repository.CategoryRepository;
+import com.example.online_bookstore.repository.OrderItemsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +24,8 @@ public class AdminBookServiceImpl implements IAdminBookService {
     private CategoryRepository categoryRepository;
     @Autowired
     private AuthorRepository authorRepository;
+    @Autowired
+    private OrderItemsRepository orderItemsRepository;
 
     @Override
     public Page<AdminBookDtoResponse> getAllBooks(Pageable pageable){
@@ -80,6 +83,9 @@ public class AdminBookServiceImpl implements IAdminBookService {
     public void deleteBook(Long bookId) {
         if (!bookRepository.existsById(bookId)) {
             throw new RuntimeException("Book not found");
+        }
+        if (orderItemsRepository.existsByBook_BookId(bookId)) {
+            throw new RuntimeException("Cannot delete book with existing orders");
         }
         bookRepository.deleteById(bookId);
     }

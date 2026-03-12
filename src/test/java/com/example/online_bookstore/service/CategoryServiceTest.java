@@ -31,7 +31,7 @@ class CategoryServiceTest {
     private Category createTestCategory(Long id, String name) {
         Category category = new Category();
         category.setCategoryId(id);
-        category.setName(name);
+        category.setCategoryName(name);
         return category;
     }
 

@@ -18,8 +18,8 @@ public class AdminBookWebController {
         return "admin/books/admin_book_create";
     }
 
-    @GetMapping("/edit/{bookId}")
-    public String adminBookEdit() {
+    @GetMapping("/update/{bookId}")
+    public String adminBookUpdate() {
         return "admin/books/admin_book_edit";
     }
 }

@@ -20,23 +20,23 @@ public class AdminUserWebController {
     private IUserRegistrationService userRegistrationService;
 
     @GetMapping
-    public String usersPage(Model model) {
+    public String adminUsersPage(Model model) {
         model.addAttribute("user", new User());
-        return "admin/users/user_list";
+        return "admin/users/admin_users";
     }
 
     @GetMapping("/create")
-    public String createUserPage(Model model) {
+    public String adminCreateUserPage(Model model) {
         model.addAttribute("user", new User());
-        return "admin/users/create_user";
+        return "admin/users/admin_create_user";
     }
 
     @PostMapping("/create")
-    public String createUser(@ModelAttribute("user") User user, Model model) {
+    public String adminCreateUser(@ModelAttribute("user") User user, Model model) {
         if (userRegistrationService.usernameExists(user.getUsername())) {
             model.addAttribute("errorMessage", "Username already exists");
-            model.addAttribute("user", user); // re-bind the user so form fields retain their values
-            return "admin/users/create_user";
+            model.addAttribute("user", user);
+            return "admin/users/admin_create_user";
         }
         userRegistrationService.registerUser(user);
         return "redirect:/admin/users";

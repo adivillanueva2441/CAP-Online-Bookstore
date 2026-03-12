@@ -12,11 +12,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class AdminWebController {
 
     @GetMapping("/dashboard")
-    public String dashboardPage(Model model) {
+    public String adminDashboardPage(Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         assert auth != null;
         String username = auth.getName(); // gets logged-in username
         model.addAttribute("username", username);
-        return "admin/dashboard";
+        return "admin/admin_dashboard";
     }
 }

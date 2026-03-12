@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td>${book.categoryName}</td>
                 <td>$${book.price.toFixed(2)}</td>
                 <td>
-                    <a href="/admin/books/edit/${book.bookId}" class="btn btn-sm btn-outline-primary me-1">Edit</a>
+                    <a href="/admin/books/update/${book.bookId}" class="btn btn-sm btn-outline-primary me-1">Edit</a>
                     <button class="btn btn-sm btn-outline-danger delete-btn" data-id="${book.bookId}">Delete</button>
                 </td>
             </tr>

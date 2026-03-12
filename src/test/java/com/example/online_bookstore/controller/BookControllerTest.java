@@ -38,7 +38,7 @@ class BookControllerTest {
         author.setName("Robert C. Martin");
 
         Category category = new Category();
-        category.setName("Programming");
+        category.setCategoryName("Programming");
 
         sampleBookEntity = new Book();
         sampleBookEntity.setBookId(1L);
@@ -59,7 +59,7 @@ class BookControllerTest {
         author.setName(authorName);
 
         Category category = new Category();
-        category.setName(categoryName);
+        category.setCategoryName(categoryName);
 
         Book book = new Book();
         book.setBookId(id);

@@ -1,6 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-    // Get book ID from URL e.g. /admin/books/edit/5
     const bookId = window.location.pathname.split('/').pop();
 
     const errorMsg = document.getElementById('error-msg');

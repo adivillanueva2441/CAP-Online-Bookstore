@@ -37,6 +37,23 @@ document.addEventListener('DOMContentLoaded', () => {
                     `<tr><td colspan="3" class="text-center text-danger py-3">Failed to load books.</td></tr>`;
             });
     }
+    function loadCategories() {
+        fetch('/api/admin/categories?page=0&size=5')
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('stat-categories').textContent = data.totalElements;
+                document.getElementById('admin-category-list-body').innerHTML =
+                    data.content.map(category => `
+                        <tr>
+                            <td>${category.categoryName}</td>
+                        </tr>
+                    `).join('');
+            })
+            .catch(() => {
+                document.getElementById('admin-category-list-body').innerHTML =
+                    `<tr><td colspan="3" class="text-center text-danger py-3">Failed to load categories.</td></tr>`;
+            });
+    }
 /*    function loadRecentOrders() {
         fetch('/api/admin/orders?page=0&size=5')
             .then(res => res.json())
@@ -55,29 +72,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     `<tr><td colspan="3" class="text-center text-danger py-3">Failed to load orders.</td></tr>`;
             });
     }
-    function loadCategories() {
-        fetch('/api/admin/categories?page=0&size=5')
-            .then(res => res.json())
-            .then(data => {
-                document.getElementById('stat-categories').textContent = data.totalElements;
-                document.getElementById('admin-category-list-body').innerHTML =
-                    data.content.map(category => `
-                        <tr>
-                            <td>${user.username}</td>
-                            <td>${user.role}</td>
-                        </tr>
-                    `).join('');
-            })
-            .catch(() => {
-                document.getElementById('admin-category-list-body').innerHTML =
-                    `<tr><td colspan="3" class="text-center text-danger py-3">Failed to load categories.</td></tr>`;
-            });
-    }
 */
     loadRecentUsers();
     loadRecentBooks();
+    console.log('about to load categories');
+    loadCategories();
+    console.log('loadCategories called');
 //    loadRecentOrders();
-//    loadCategories();
 
 
 });

@@ -28,13 +28,13 @@ class CategoryControllerTest {
         CategoryDtoResponse category1 = new CategoryDtoResponse(
                 new com.example.online_bookstore.model.Category() {{
                     setCategoryId(1L);
-                    setName("Programming");
+                    setCategoryName("Programming");
                 }}
         );
         CategoryDtoResponse category2 = new CategoryDtoResponse(
                 new com.example.online_bookstore.model.Category() {{
                     setCategoryId(2L);
-                    setName("Fiction");
+                    setCategoryName("Fiction");
                 }}
         );
 

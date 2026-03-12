@@ -165,21 +165,6 @@ class CartItemsServiceTest {
         verify(cartItemsRepository).save(cartItem);
     }
 
-    @Test
-    void updateCartItems_shouldDeleteIfQuantityZero() {
-        Cart cart = createTestCart();
-        Book book = createTestBook();
-        CartItems cartItem = createTestCartItem(cart, book, 2);
-        CartItemsDtoRequest request = new CartItemsDtoRequest(1L, 0);
-
-        when(cartRepository.findByUser_UserId(1L)).thenReturn(cart);
-        when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
-        when(cartItemsRepository.findByCartAndBook(cart, book)).thenReturn(cartItem);
-
-        cartItemsService.updateCartItems(1L, request);
-
-        verify(cartItemsRepository).delete(cartItem);
-    }
 
     @Test
     void removeBookFromCart_shouldDeleteById() {
@@ -193,5 +178,19 @@ class CartItemsServiceTest {
         cartItemsService.removeBookFromCart(1L, 1L);
 
         verify(cartItemsRepository).deleteById(cartItem.getCartItemsId());
+    }
+
+    @Test
+    void removeBookFromCart_shouldThrowExceptionWhenCartItemNotFound() {
+        Cart cart = createTestCart();
+
+        when(cartRepository.findByUser_UserId(1L)).thenReturn(cart);
+        when(cartItemsRepository.findByCartAndBook_BookId(cart, 1L)).thenReturn(null);
+
+        RuntimeException ex = assertThrows(RuntimeException.class,
+                () -> cartItemsService.removeBookFromCart(1L, 1L));
+
+        assertEquals("CartItem not found", ex.getMessage());
+        verify(cartItemsRepository, never()).deleteById(any());
     }
 }

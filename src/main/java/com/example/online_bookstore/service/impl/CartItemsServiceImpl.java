@@ -75,9 +75,9 @@ public class CartItemsServiceImpl implements ICartItemsService {
         Cart cart = cartRepository.findByUser_UserId(userId);
         CartItems cartItem = cartItemsRepository.findByCartAndBook_BookId(cart, bookId);
 
-//        if (cartItem != null) {
-//            cartItemsRepository.delete(cartItem);
-//        }
+        if (cartItem == null) {
+            throw new RuntimeException("CartItem not found");
+        }
         if (null != cartItem.getCartItemsId()) {
             cartItemsRepository.deleteById(cartItem.getCartItemsId());
         }
