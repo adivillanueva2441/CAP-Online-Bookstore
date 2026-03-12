@@ -17,7 +17,7 @@ public class Book {
     private Long bookId;
 
     @NotBlank(message = "Book title is required.")
-    @Column(nullable = false, unique = true, length = 150, name = "title")
+    @Column(nullable = false, length = 150, name = "title")
     private String title;
 
     @NotBlank(message = "Book description is required")

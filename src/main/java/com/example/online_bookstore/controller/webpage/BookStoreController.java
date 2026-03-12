@@ -11,8 +11,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 //Renders bookstore homepage
 @Controller
 public class BookStoreController {
-    @Autowired
-    private BookServiceImpl bookServiceImpl;
 
     @GetMapping("/")
     public String bookstorePage(Model model) {

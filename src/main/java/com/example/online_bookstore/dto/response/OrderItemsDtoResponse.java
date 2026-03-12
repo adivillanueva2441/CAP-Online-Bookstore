@@ -17,8 +17,8 @@ public class OrderItemsDtoResponse {
     public OrderItemsDtoResponse(OrderItems orderItems) {
         this.title = orderItems.getBook().getTitle();
         this.quantity = orderItems.getQuantity();
-        this.price = orderItems.getBook().getPrice();
-        this.subTotal = price * quantity;
+        this.price = orderItems.getPrice();
+        this.subTotal = orderItems.getPrice() * quantity;
     }
 
     public String getTitle() {

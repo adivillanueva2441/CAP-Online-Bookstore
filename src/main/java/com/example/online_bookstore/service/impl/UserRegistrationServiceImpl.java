@@ -24,11 +24,16 @@ public class UserRegistrationServiceImpl implements IUserRegistrationService {
         if (userRepository.findByUsername(user.getUsername()).isPresent()) {
             throw new RuntimeException("Username is already in use");
         }
+        // Set default role if none provided
+        if (user.getRole() == null || user.getRole().isEmpty()) {
+            user.setRole("USER"); // or "USER" depending on your Role setup
+        }
+
         //mask password
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         //save user
-        user.setRole("USER");
+        user.setRole(user.getRole());
         User savedUser = userRepository.save(user);
 
 

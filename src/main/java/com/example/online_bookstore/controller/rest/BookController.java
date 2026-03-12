@@ -3,6 +3,9 @@ package com.example.online_bookstore.controller.rest;
 import com.example.online_bookstore.dto.response.BookDtoResponse;
 import com.example.online_bookstore.service.IBookService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -10,24 +13,37 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/books")
 public class BookController {
+
     @Autowired
     private IBookService bookService;
 
-    //Retrieve book list
     @GetMapping
-    public List<BookDtoResponse> getBooks() {
-        return bookService.getAllBooks();
+    public Page<BookDtoResponse> getBooks(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "12") int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        return bookService.getAllBooks(pageable);
     }
 
-    //Search books by title
     @GetMapping("/search")
-    public List<BookDtoResponse> searchBooks(@RequestParam("title") String title){
-        return bookService.findBooksByTitle(title);
+    public Page<BookDtoResponse> searchBooks(
+            @RequestParam("title") String title,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "12") int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        return bookService.findBooksByTitle(title, pageable);
     }
 
     @GetMapping("/category/{categoryId}")
-    public List<BookDtoResponse> getBooksByCategory(@PathVariable Long categoryId) {
-        return bookService.filterByCategory(categoryId);
+    public Page<BookDtoResponse> getBooksByCategory(
+            @PathVariable Long categoryId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "12") int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        return bookService.filterByCategory(categoryId, pageable);
     }
 
 

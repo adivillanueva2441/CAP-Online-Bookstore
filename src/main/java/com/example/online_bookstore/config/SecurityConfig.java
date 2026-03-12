@@ -22,6 +22,7 @@ public class SecurityConfig {
                 //allows access without login
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/","/books/**" , "/api/books/**", "/register", "/login","/api/category", "/css/**", "/js/**", "/images/**", "/style/**").permitAll()
+                        .requestMatchers("/admin/**", "/api/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(ex -> ex
@@ -33,8 +34,12 @@ public class SecurityConfig {
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
-                        .loginProcessingUrl("/login") // POST for form submission
-                        .defaultSuccessUrl("/", true)
+                        .loginProcessingUrl("/login")
+                        .successHandler((request, response, authentication) -> {
+                            boolean isAdmin = authentication.getAuthorities().stream()
+                                    .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+                            response.sendRedirect(isAdmin ? "/admin/dashboard" : "/");
+                        })
                         .permitAll()
                 )
                 .logout(LogoutConfigurer::permitAll);

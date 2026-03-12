@@ -1,236 +1,227 @@
 package com.example.online_bookstore.service;
 
-
 import com.example.online_bookstore.dto.response.BookDtoResponse;
 import com.example.online_bookstore.model.Author;
 import com.example.online_bookstore.model.Book;
 import com.example.online_bookstore.model.Category;
 import com.example.online_bookstore.repository.BookRepository;
 import com.example.online_bookstore.service.impl.BookServiceImpl;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.*;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class BookServiceTest {
-
-    @InjectMocks
-    BookServiceImpl bookService;
+class BookServiceTest {
 
     @Mock
-    BookRepository bookRepository;
+    private BookRepository bookRepository;
 
+    @InjectMocks
+    private BookServiceImpl bookService;
 
-    @Test
-    public void getAllBooks_Success_Test(){
+    private Book sampleBook;
+    private Pageable pageable;
 
-        Book book = new Book();
-
-        List<Book> bookList = new ArrayList<>();
-        bookList.add(book);
-
+    @BeforeEach
+    void setUp() {
         Author author = new Author();
-        author.setAuthorId(20L);
-        author.setName("Author Name");
-        author.setBooks(bookList);
+        author.setName("Robert C. Martin");  // uses setName()
 
         Category category = new Category();
-        category.setName("Category Name");
+        category.setName("Programming");     // uses setName()
 
-        book.setTitle("Book 1");
-        book.setBookId(1L);
-        book.setDescription("Book 1");
-        book.setPrice(123);
-        book.setAuthor(author);
-        book.setOrderItems(new ArrayList<>());
-        book.setCategory(category);
+        sampleBook = new Book();
+        sampleBook.setBookId(1L);
+        sampleBook.setTitle("Clean Code");
+        sampleBook.setAuthor(author);
+        sampleBook.setCategory(category);
+        sampleBook.setDescription("A handbook of agile software craftsmanship.");
+        sampleBook.setPrice(29.99);
 
-        List<BookDtoResponse> bookDtoResponseList = new ArrayList<>();
-
-        BookDtoResponse bookDtoResponse = new BookDtoResponse(book);
-        bookDtoResponse.setBookId(1L);
-        bookDtoResponse.setTitle("Book 1");
-        bookDtoResponse.setAuthorName("Author Name");
-        bookDtoResponse.setDescription("Book 1");
-        bookDtoResponse.setPrice(123);
-        bookDtoResponse.setCategoryName("Category Name");
-
-        bookDtoResponseList.add(bookDtoResponse);
-
-
-        when(bookRepository.findAll()).thenReturn(bookList);
-
-        List<BookDtoResponse> response = bookService.getAllBooks(); // dito na papasok yung test sa actual Impl
-
-        verify(bookRepository, times(1)).findAll();
-
-        assertThat(response)
-                .usingRecursiveComparison()
-                .isEqualTo(bookDtoResponseList);
-
+        pageable = PageRequest.of(0, 12);
     }
 
+    // ─── getAllBooks ──────────────────────────────────────────────────────────
+
     @Test
-    public void getAllBooks_Empty_Test(){
-        // Arrange
-        when(bookRepository.findAll()).thenReturn(Collections.emptyList());
+    void getAllBooks_shouldReturnPageOfBooks() {
+        Page<Book> bookPage = new PageImpl<>(List.of(sampleBook), pageable, 1);
+        when(bookRepository.findAll(pageable)).thenReturn(bookPage);
 
-        // Act
-        List<BookDtoResponse> result = bookService.getAllBooks();
+        Page<BookDtoResponse> result = bookService.getAllBooks(pageable);
 
-        // Assert
         assertNotNull(result);
-        assertTrue(result.isEmpty());
+        assertEquals(1, result.getTotalElements());
+        assertEquals("Clean Code", result.getContent().get(0).getTitle());
+        assertEquals("Robert C. Martin", result.getContent().get(0).getAuthorName());
+        verify(bookRepository).findAll(pageable);
     }
 
     @Test
-    void findBooksByTitle_Success_Test() {
+    void getAllBooks_shouldReturnEmptyPageWhenNoBooksExist() {
+        when(bookRepository.findAll(pageable)).thenReturn(new PageImpl<>(List.of()));
 
-        // Arrange
-        Book book = new Book();
-        book.setTitle("Spring Boot in Action");
+        Page<BookDtoResponse> result = bookService.getAllBooks(pageable);
 
-        when(bookRepository.findBooksByTitleContainingIgnoreCase("Spring")).thenReturn(List.of(book));
+        assertTrue(result.getContent().isEmpty());
+        assertEquals(0, result.getTotalElements());
+    }
 
-        // Act
-        List<BookDtoResponse> result = bookService.findBooksByTitle("Spring");
+    @Test
+    void getAllBooks_shouldMapAllFieldsCorrectly() {
+        Page<Book> bookPage = new PageImpl<>(List.of(sampleBook));
+        when(bookRepository.findAll(pageable)).thenReturn(bookPage);
 
-        // Assert
+        BookDtoResponse result = bookService.getAllBooks(pageable).getContent().get(0);
+
+        assertAll(
+                () -> assertEquals(1L, result.getBookId()),
+                () -> assertEquals("Clean Code", result.getTitle()),
+                () -> assertEquals("Robert C. Martin", result.getAuthorName()),
+                () -> assertEquals("Programming", result.getCategoryName()),
+                () -> assertEquals(29.99, result.getPrice())
+        );
+    }
+
+    // ─── findBooksByTitle ─────────────────────────────────────────────────────
+
+    @Test
+    void findBooksByTitle_shouldReturnMatchingBooks() {
+        Page<Book> bookPage = new PageImpl<>(List.of(sampleBook));
+        when(bookRepository.findBooksByTitleContainingIgnoreCase("Clean", pageable)).thenReturn(bookPage);
+
+        Page<BookDtoResponse> result = bookService.findBooksByTitle("Clean", pageable);
+
         assertNotNull(result);
-        assertEquals(1, result.size());
-        assertEquals("Spring Boot in Action", result.get(0).getTitle());
-
+        assertEquals(1, result.getTotalElements());
+        assertEquals("Clean Code", result.getContent().get(0).getTitle());
+        verify(bookRepository).findBooksByTitleContainingIgnoreCase("Clean", pageable);
     }
 
-    //Tests if no title returns an empty list of no matching titles were searched
     @Test
-    void findBooksByTitle_Empty_Test() {
+    void findBooksByTitle_shouldReturnEmptyPageWhenNoMatchFound() {
+        when(bookRepository.findBooksByTitleContainingIgnoreCase("xyz123", pageable))
+                .thenReturn(new PageImpl<>(List.of()));
 
-        // Arrange
-        when(bookRepository.findBooksByTitleContainingIgnoreCase("Nonexistent"))
-                .thenReturn(Collections.emptyList());
+        Page<BookDtoResponse> result = bookService.findBooksByTitle("xyz123", pageable);
 
-        // Act
-        List<BookDtoResponse> result = bookService.findBooksByTitle("Nonexistent");
+        assertTrue(result.getContent().isEmpty());
+    }
 
-        // Assert
+    @Test
+    void findBooksByTitle_shouldReturnAllMatchesWhenMultipleBooksFound() {
+        Book secondBook = new Book();
+        secondBook.setBookId(2L);
+        secondBook.setTitle("Code Complete");
+        secondBook.setAuthor(sampleBook.getAuthor());
+        secondBook.setCategory(sampleBook.getCategory());
+        secondBook.setDescription("A comprehensive guide to software construction.");
+        secondBook.setPrice(39.99);
+
+        Page<Book> bookPage = new PageImpl<>(List.of(sampleBook, secondBook));
+        when(bookRepository.findBooksByTitleContainingIgnoreCase("Code", pageable)).thenReturn(bookPage);
+
+        Page<BookDtoResponse> result = bookService.findBooksByTitle("Code", pageable);
+
+        assertEquals(2, result.getContent().size());
+    }
+
+    // ─── filterByCategory ────────────────────────────────────────────────────
+
+    @Test
+    void filterByCategory_shouldReturnBooksInCategory() {
+        Page<Book> bookPage = new PageImpl<>(List.of(sampleBook));
+        when(bookRepository.findByCategory_CategoryId(1L, pageable)).thenReturn(bookPage);
+
+        Page<BookDtoResponse> result = bookService.filterByCategory(1L, pageable);
+
         assertNotNull(result);
-        assertTrue(result.isEmpty());
-
-        verify(bookRepository, times(1))
-                .findBooksByTitleContainingIgnoreCase("Nonexistent");
+        assertEquals(1, result.getTotalElements());
+        assertEquals("Programming", result.getContent().get(0).getCategoryName());
+        verify(bookRepository).findByCategory_CategoryId(1L, pageable);
     }
 
     @Test
-    void filterByCategory_Success_Test() {
+    void filterByCategory_shouldReturnEmptyPageWhenCategoryHasNoBooks() {
+        when(bookRepository.findByCategory_CategoryId(99L, pageable))
+                .thenReturn(new PageImpl<>(List.of()));
 
-        // Arrange
-        Category category = new Category();
-        category.setCategoryId(1L);
-        category.setName("Programming");
+        Page<BookDtoResponse> result = bookService.filterByCategory(99L, pageable);
 
-        Book book = new Book();
-        book.setBookId(1L);
-        book.setTitle("Clean Code");
-        book.setCategory(category);
-
-        when(bookRepository.findByCategory_CategoryId(1L))
-                .thenReturn(List.of(book));
-
-        // Act
-        List<BookDtoResponse> result = bookService.filterByCategory(1L);
-
-        // Assert
-        assertNotNull(result);
-        assertEquals(1, result.size());
-        assertEquals("Clean Code", result.get(0).getTitle());
-        assertEquals("Programming", result.get(0).getCategoryName());
-
-        verify(bookRepository, times(1))
-                .findByCategory_CategoryId(1L);
+        assertTrue(result.getContent().isEmpty());
     }
 
     @Test
-    void filterByCategory_Empty_Test() {
+    void filterByCategory_shouldReturnAllBooksMatchingCategory() {
+        Book secondBook = new Book();
+        secondBook.setBookId(2L);
+        secondBook.setTitle("The Pragmatic Programmer");
+        secondBook.setAuthor(sampleBook.getAuthor());
+        secondBook.setCategory(sampleBook.getCategory());
+        secondBook.setDescription("Your journey to mastery.");
+        secondBook.setPrice(34.99);
 
-        // Arrange
-        when(bookRepository.findByCategory_CategoryId(1L))
-                .thenReturn(Collections.emptyList());
+        Page<Book> bookPage = new PageImpl<>(List.of(sampleBook, secondBook));
+        when(bookRepository.findByCategory_CategoryId(1L, pageable)).thenReturn(bookPage);
 
-        // Act
-        List<BookDtoResponse> result = bookService.filterByCategory(1L);
+        Page<BookDtoResponse> result = bookService.filterByCategory(1L, pageable);
 
-        // Assert
-        assertNotNull(result);
-        assertTrue(result.isEmpty());
-
-        verify(bookRepository, times(1))
-                .findByCategory_CategoryId(1L);
+        assertEquals(2, result.getContent().size());
+        result.getContent().forEach(book ->
+                assertEquals("Programming", book.getCategoryName()));
     }
 
+    // ─── getBookById ──────────────────────────────────────────────────────────
+
     @Test
-    void getBookById_returnBook_ifBookExists() {
+    void getBookById_shouldReturnBookWhenIdExists() {
+        when(bookRepository.findById(1L)).thenReturn(Optional.of(sampleBook));
 
-        // Arrange
-        Author author = new Author();
-        author.setName("Robert Martin");
-
-        Category category = new Category();
-        category.setName("Programming");
-
-        Book book = new Book();
-        book.setBookId(1L);
-        book.setTitle("Clean Code");
-        book.setAuthor(author);
-        book.setCategory(category);
-        book.setDescription("A book about writing cleaner code");
-        book.setPrice(45.0);
-
-        when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
-
-        // Act
         BookDtoResponse result = bookService.getBookById(1L);
 
-        // Assert
         assertNotNull(result);
         assertEquals(1L, result.getBookId());
         assertEquals("Clean Code", result.getTitle());
-        assertEquals("Robert Martin", result.getAuthorName());
+        assertEquals("Robert C. Martin", result.getAuthorName());
         assertEquals("Programming", result.getCategoryName());
-
-        verify(bookRepository, times(1)).findById(1L);
-
+        assertEquals("A handbook of agile software craftsmanship.", result.getDescription());
+        assertEquals(29.99, result.getPrice());
+        verify(bookRepository).findById(1L);
     }
 
     @Test
-    void getBookById_shouldThrowException_whenBookDoesNotExist() {
+    void getBookById_shouldThrowExceptionWhenBookNotFound() {
+        when(bookRepository.findById(999L)).thenReturn(Optional.empty());
 
-        // Arrange
-        when(bookRepository.findById(1L)).thenReturn(Optional.empty());
+        RuntimeException ex = assertThrows(RuntimeException.class,
+                () -> bookService.getBookById(999L));
 
-        // Act & Assert
-        RuntimeException exception = assertThrows(
-                RuntimeException.class,
-                () -> bookService.getBookById(1L)
-        );
-
-        assertEquals("Book not found", exception.getMessage());
-
-        verify(bookRepository, times(1)).findById(1L);
+        assertEquals("Book not found", ex.getMessage());
+        verify(bookRepository).findById(999L);
     }
 
+    @Test
+    void getBookById_shouldHaveNoNullFieldsWhenBookExists() {
+        when(bookRepository.findById(1L)).thenReturn(Optional.of(sampleBook));
 
+        BookDtoResponse result = bookService.getBookById(1L);
+
+        assertAll(
+                () -> assertNotNull(result.getBookId()),
+                () -> assertNotNull(result.getTitle()),
+                () -> assertNotNull(result.getAuthorName()),
+                () -> assertNotNull(result.getCategoryName()),
+                () -> assertNotNull(result.getDescription())
+        );
+    }
 }

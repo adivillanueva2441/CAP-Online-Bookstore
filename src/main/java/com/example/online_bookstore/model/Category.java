@@ -34,7 +34,7 @@ public class Category {
         return categoryName;
     }
 
-    public void setName(String categoryName) {
+    public void setCategoryName(String categoryName) {
         this.categoryName = categoryName;
     }
 

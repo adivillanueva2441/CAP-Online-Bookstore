@@ -6,6 +6,8 @@ import com.example.online_bookstore.repository.BookRepository;
 import com.example.online_bookstore.service.IBookService;
 import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,33 +20,21 @@ public class BookServiceImpl implements IBookService {
     private BookRepository bookRepository;
 
     @Override
-    //Retrieve book list
-    public List<BookDtoResponse> getAllBooks(){
-
-        List<Book> listOfBooks = bookRepository.findAll();
-
-        return listOfBooks.stream()
-                .map(BookDtoResponse::new)
-                .collect(Collectors.toList());
+    public Page<BookDtoResponse> getAllBooks(Pageable pageable) {
+        return bookRepository.findAll(pageable)
+                .map(BookDtoResponse::new);
     }
 
     @Override
-    //Search books by title
-    public List<BookDtoResponse> findBooksByTitle(String title){
-        List<Book> listOfBooks = bookRepository.findBooksByTitleContainingIgnoreCase(title);
-
-        return listOfBooks.stream()
-                .map(BookDtoResponse::new)
-                .collect(Collectors.toList());
-
+    public Page<BookDtoResponse> findBooksByTitle(String title, Pageable pageable) {
+        return bookRepository.findBooksByTitleContainingIgnoreCase(title, pageable)
+                .map(BookDtoResponse::new);
     }
 
     @Override
-    public List<BookDtoResponse> filterByCategory(Long categoryId) {
-        return bookRepository.findByCategory_CategoryId(categoryId)
-                .stream()
-                .map(BookDtoResponse::new)
-                .toList();
+    public Page<BookDtoResponse> filterByCategory(Long categoryId, Pageable pageable) {
+        return bookRepository.findByCategory_CategoryId(categoryId, pageable)
+                .map(BookDtoResponse::new);
     }
 
     @Override
